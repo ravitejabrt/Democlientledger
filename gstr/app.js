@@ -245,24 +245,10 @@
 
   // Safe API helper that validates JSON and provides actionable server restart messages
   async function apiFetch(endpoint, options = {}) {
-    // If Supabase is configured OR running on a static host (GitHub Pages, file://) where no Node server exists:
-    if (window.BRT_SUPABASE && (window.BRT_SUPABASE.isConfigured() || window.location.hostname.includes('github.io') || window.location.protocol === 'file:')) {
-      try {
-        return await window.BRT_SUPABASE.handleApiRequest(endpoint, options);
-      } catch (err) {
-        console.error('[Supabase Route Error]', err);
-        throw err;
-      }
-    }
-
     let res;
     try {
       res = await fetch(endpoint, options);
     } catch (networkErr) {
-      if (window.location.hostname.includes('github.io') || window.location.protocol === 'file:') {
-        if (window.BRT_SUPABASE) window.BRT_SUPABASE.openSettingsModal();
-        throw new Error('Please connect your Supabase database in the settings modal to enable live cloud features on GitHub Pages.');
-      }
       throw networkErr;
     }
     const contentType = res.headers.get('content-type') || '';
@@ -312,15 +298,6 @@
     setQrmpViewMode(qrmpViewMode);
     setCompViewMode(compViewMode);
 
-    // Listen for realtime cloud updates from Supabase (phone/tablet sync)
-    if (window.BRT_SUPABASE) {
-      window.BRT_SUPABASE.onRemoteUpdate(async () => {
-        showToast('⚡ Live cloud update synced from another device!');
-        if (currentScheme === 'monthly') await fetchFilings(currentMonth);
-        else if (currentScheme === 'qrmp') await fetchQrmpFilings(currentQrmpQuarter);
-        else if (currentScheme === 'composition') await fetchCompositionFilings(currentCompositionQuarter);
-      });
-    }
 
     await fetchPeriodStatus();
     await fetchMonths();
