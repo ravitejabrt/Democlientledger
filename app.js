@@ -6,20 +6,7 @@
 (function () {
   'use strict';
 
-  // Pre-configured Supabase Credentials (dynamic from config.js or configured via UI)
-  const SUPABASE_CONFIG = {
-    get url() {
-      return (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url) ? window.SUPABASE_CONFIG.url.trim() : '';
-    },
-    get anonKey() {
-      return (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.anonKey) ? window.SUPABASE_CONFIG.anonKey.trim() : '';
-    },
-  };
-
-  // Flag to ensure initial pull from Supabase completes before any local push can occur
-  let hasCompletedInitialSync = false;
-
-  // Default BigRock API URL (optional: paste here or configure via the UI)
+  // Application operates in 100% Local Server Database mode (database.json)
   const DEFAULT_BIGROCK_API_URL = ''; // e.g. 'https://yourdomain.com/api.php'
 
   // State Management
@@ -34,9 +21,7 @@
       businessEmail: '',
       businessAddress: '',
       lastModified: 0,
-      dbProvider: 'supabase',
-      supabaseUrl: '',
-      supabaseKey: '',
+      dbProvider: 'local',
       apiUrl: '',
     },
     activeView: 'dashboard',
@@ -612,56 +597,7 @@
     };
   }
 
-  // ==================== PERSISTENCE & CLOUD DATABASE ====================
-  let cloudSyncAvailable = false;
-  let currentDbTab = 'supabase';
-  let supabaseClient = null;
-
-  function setDbProviderTab(tab) {
-    currentDbTab = tab;
-    const btnSupabase = document.getElementById('tab-db-supabase');
-    const btnBigrock = document.getElementById('tab-db-bigrock');
-    const panelSupabase = document.getElementById('panel-db-supabase');
-    const panelBigrock = document.getElementById('panel-db-bigrock');
-
-    if (tab === 'supabase') {
-      if (btnSupabase) btnSupabase.className = 'px-4 py-2 text-xs font-bold border-b-2 border-emerald-600 text-emerald-700 transition flex items-center gap-1.5';
-      if (btnBigrock) btnBigrock.className = 'px-4 py-2 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-1.5';
-      if (panelSupabase) panelSupabase.classList.remove('hidden');
-      if (panelBigrock) panelBigrock.classList.add('hidden');
-    } else {
-      if (btnSupabase) btnSupabase.className = 'px-4 py-2 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-1.5';
-      if (btnBigrock) btnBigrock.className = 'px-4 py-2 text-xs font-bold border-b-2 border-blue-600 text-blue-700 transition flex items-center gap-1.5';
-      if (panelSupabase) panelSupabase.classList.add('hidden');
-      if (panelBigrock) panelBigrock.classList.remove('hidden');
-    }
-
-    const statusBox = document.getElementById('cloud-test-status');
-    if (statusBox) statusBox.classList.add('hidden');
-  }
-
-  function getSupabaseClient() {
-    const url = (state.settings.supabaseUrl || SUPABASE_CONFIG.url || '').trim();
-    const key = (state.settings.supabaseKey || SUPABASE_CONFIG.anonKey || '').trim();
-
-    if (!url || !key) return null;
-
-    if (typeof window !== 'undefined' && window.supabase && typeof window.supabase.createClient === 'function') {
-      if (!supabaseClient || supabaseClient.__url !== url || supabaseClient.__key !== key) {
-        try {
-          supabaseClient = window.supabase.createClient(url, key);
-          supabaseClient.__url = url;
-          supabaseClient.__key = key;
-        } catch (e) {
-          console.error('Failed to initialize Supabase client:', e);
-          return null;
-        }
-      }
-      return supabaseClient;
-    }
-    return null;
-  }
-
+  // ==================== PERSISTENCE & LOCAL SERVER DATABASE ====================
   function getApiEndpoint(action) {
     let base = (state.settings.apiUrl || DEFAULT_BIGROCK_API_URL || '').trim();
     if (!base) {
@@ -669,197 +605,6 @@
     }
     const sep = base.includes('?') ? '&' : '?';
     return `${base}${sep}action=${action}`;
-  }
-
-  const SUPABASE_SCHEMA_SQL = `-- Supabase Table Setup for ClientLedger Pro
-CREATE TABLE IF NOT EXISTS public.clientledger_data (
-    id TEXT PRIMARY KEY,
-    data JSONB NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
-ALTER TABLE public.clientledger_data ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Allow anon all" ON public.clientledger_data;
-CREATE POLICY "Allow anon all"
-ON public.clientledger_data
-FOR ALL
-TO anon, authenticated
-USING (true)
-WITH CHECK (true);
-
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
-    ALTER PUBLICATION supabase_realtime ADD TABLE public.clientledger_data;
-  END IF;
-EXCEPTION
-  WHEN duplicate_object THEN NULL;
-END $$;
-
-INSERT INTO public.clientledger_data (id, data)
-VALUES ('main_store', '{"clients":[],"settings":{"currency":"₹","businessName":""}}'::jsonb)
-ON CONFLICT (id) DO NOTHING;
-
--- Helper views for Supabase Table Editor
-CREATE OR REPLACE VIEW public.v_clients AS
-SELECT 
-    c->>'id' AS client_id,
-    c->>'name' AS client_name,
-    c->>'businessName' AS business_name,
-    c->>'phone' AS phone,
-    c->>'email' AS email,
-    COALESCE((c->>'hasGst')::boolean, false) AS has_gst,
-    c->>'gstNumber' AS gst_number,
-    c->>'billingCycle' AS billing_cycle,
-    COALESCE((c->>'fixedMonthlyAmount')::numeric, 0) AS fixed_monthly_fee,
-    COALESCE((c->>'incomeTaxFee')::numeric, 0) AS income_tax_fee,
-    COALESCE((c->>'extraFee')::numeric, 0) AS extra_fee,
-    c->>'startMonth' AS start_month,
-    c->>'status' AS status,
-    jsonb_array_length(COALESCE(c->'payments', '[]'::jsonb)) AS payments_count
-FROM public.clientledger_data,
-     jsonb_array_elements(COALESCE(data->'clients', '[]'::jsonb)) AS c
-WHERE id = 'main_store';
-
-CREATE OR REPLACE VIEW public.v_payments AS
-SELECT 
-    p->>'id' AS payment_id,
-    c->>'name' AS client_name,
-    COALESCE((p->>'amount')::numeric, 0) AS amount_paid,
-    COALESCE((p->>'discount')::numeric, 0) AS settlement_discount,
-    p->>'discountNote' AS discount_note,
-    p->>'date' AS payment_date,
-    p->>'method' AS payment_method,
-    p->>'reference' AS reference,
-    p->>'note' AS note
-FROM public.clientledger_data,
-     jsonb_array_elements(COALESCE(data->'clients', '[]'::jsonb)) AS c,
-     jsonb_array_elements(COALESCE(c->'payments', '[]'::jsonb)) AS p
-WHERE id = 'main_store';
-
--- View 4: Outgoing Payments & Expenses Table
-CREATE OR REPLACE VIEW public.v_expenses AS
-SELECT 
-    e->>'id' AS expense_id,
-    e->>'date' AS expense_date,
-    e->>'category' AS category,
-    e->>'subcategory' AS subcategory,
-    e->>'payee' AS payee,
-    e->>'employeeRole' AS employee_role,
-    e->>'salaryMonth' AS salary_month,
-    e->>'billNumber' AS bill_number,
-    COALESCE((e->>'amount')::numeric, 0) AS amount,
-    e->>'method' AS payment_method,
-    e->>'reference' AS reference,
-    e->>'notes' AS notes
-FROM public.clientledger_data,
-     jsonb_array_elements(COALESCE(data->'expenses', '[]'::jsonb)) AS e
-WHERE id = 'main_store';`;
-
-  function copySupabaseSql() {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(SUPABASE_SCHEMA_SQL).then(() => {
-        showToast('Supabase SQL copied to clipboard!');
-      }).catch(() => {
-        prompt('Copy this SQL script and paste into Supabase SQL Editor:', SUPABASE_SCHEMA_SQL);
-      });
-    } else {
-      prompt('Copy this SQL script and paste into Supabase SQL Editor:', SUPABASE_SCHEMA_SQL);
-    }
-  }
-
-  function openCloudDatabaseModal() {
-    const supUrl = document.getElementById('supabase-url-input');
-    const supKey = document.getElementById('supabase-key-input');
-    const brUrl = document.getElementById('cloud-api-url-input');
-    const statusBox = document.getElementById('cloud-test-status');
-
-    if (supUrl) supUrl.value = state.settings.supabaseUrl || SUPABASE_CONFIG.url || '';
-    if (supKey) supKey.value = state.settings.supabaseKey || SUPABASE_CONFIG.anonKey || '';
-    if (brUrl) brUrl.value = state.settings.apiUrl || DEFAULT_BIGROCK_API_URL || '';
-
-    if (statusBox) statusBox.classList.add('hidden');
-
-    const provider = state.settings.dbProvider || (state.settings.apiUrl ? 'bigrock' : 'supabase');
-    setDbProviderTab(provider);
-
-    openModal('cloudDatabaseModal');
-  }
-
-  async function testCloudDbConnection() {
-    const statusBox = document.getElementById('cloud-test-status');
-    const statusIcon = document.getElementById('cloud-test-icon');
-    const statusText = document.getElementById('cloud-test-text');
-    const btn = document.getElementById('cloud-test-btn');
-
-    if (btn) btn.disabled = true;
-
-    if (statusBox) {
-      statusBox.className = 'p-3 rounded-xl text-xs flex items-center gap-2.5 bg-blue-50 text-blue-700 border border-blue-200';
-      statusIcon.innerHTML = '<span class="inline-block animate-spin">⏳</span>';
-      statusText.textContent = `Testing connection to ${currentDbTab === 'supabase' ? 'Supabase' : 'BigRock'} database...`;
-      statusBox.classList.remove('hidden');
-    }
-
-    try {
-      if (currentDbTab === 'supabase') {
-        const urlInput = document.getElementById('supabase-url-input');
-        const keyInput = document.getElementById('supabase-key-input');
-        const url = (urlInput?.value || '').trim();
-        const key = (keyInput?.value || '').trim();
-
-        if (!url || !key) {
-          throw new Error('Please enter both Supabase Project URL and Anon API Key.');
-        }
-
-        if (!window.supabase || !window.supabase.createClient) {
-          throw new Error('Supabase client library not loaded. Check internet connection.');
-        }
-
-        const testClient = window.supabase.createClient(url, key);
-        const { data, error } = await testClient.from('clientledger_data').select('id').limit(1);
-
-        if (error) {
-          if (error.code === '42P01') {
-            throw new Error('Table clientledger_data not found in Supabase! Please run the SQL in Supabase SQL Editor.');
-          }
-          throw new Error(error.message || 'Supabase authentication failed.');
-        }
-
-        statusBox.className = 'p-3 rounded-xl text-xs flex items-center gap-2.5 bg-emerald-50 text-emerald-800 border border-emerald-300';
-        statusIcon.innerHTML = '✅';
-        statusText.innerHTML = `<strong>Connected!</strong> Supabase PostgreSQL database is online and reachable.`;
-
-      } else {
-        // BigRock PHP API test
-        const input = document.getElementById('cloud-api-url-input');
-        let url = (input ? input.value : '').trim();
-        if (!url) url = 'api.php';
-        const sep = url.includes('?') ? '&' : '?';
-        const pingUrl = `${url}${sep}action=ping`;
-
-        const res = await fetch(pingUrl, { method: 'GET' });
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success) {
-            statusBox.className = 'p-3 rounded-xl text-xs flex items-center gap-2.5 bg-emerald-50 text-emerald-800 border border-emerald-300';
-            statusIcon.innerHTML = '✅';
-            statusText.innerHTML = `<strong>Connected!</strong> BigRock MySQL is active and responding.`;
-          } else {
-            throw new Error(json.error || 'Database connection error on BigRock.');
-          }
-        } else {
-          throw new Error(`HTTP status ${res.status}`);
-        }
-      }
-    } catch (e) {
-      statusBox.className = 'p-3 rounded-xl text-xs flex items-center gap-2.5 bg-red-50 text-red-800 border border-red-300';
-      statusIcon.innerHTML = '❌';
-      statusText.innerHTML = `<strong>Connection Failed:</strong> ${e.message}`;
-    } finally {
-      if (btn) btn.disabled = false;
-    }
   }
 
   // ==================== SHARED SERVER CONFIGURATION ====================
@@ -873,14 +618,6 @@ WHERE id = 'main_store';`;
           if (json.data.settings) {
             const s = json.data.settings;
             let changed = false;
-            if (!state.settings.supabaseUrl && s.supabaseUrl) {
-              state.settings.supabaseUrl = s.supabaseUrl;
-              changed = true;
-            }
-            if (!state.settings.supabaseKey && s.supabaseKey) {
-              state.settings.supabaseKey = s.supabaseKey;
-              changed = true;
-            }
             if (!state.settings.businessName && s.businessName) {
               state.settings.businessName = s.businessName;
               changed = true;
@@ -904,30 +641,27 @@ WHERE id = 'main_store';`;
             if (changed) {
               localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
               updateBusinessProfileBanner();
-              updateLoginDbStatus();
               updateCurrencySymbols();
             }
           }
           if (Array.isArray(json.data.clients) && json.data.clients.length > 0) {
-            if (!state.clients || state.clients.length === 0) {
-              state.clients = json.data.clients;
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(state.clients));
-              if (state.activeView === 'dashboard') renderDashboard();
-              else if (state.activeView === 'clients') renderClientsList();
-              else if (state.activeView === 'matrix') renderMatrixView();
-            }
+            state.clients = json.data.clients;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state.clients));
+            if (state.activeView === 'dashboard') renderDashboard();
+            else if (state.activeView === 'clients') renderClientsList();
+            else if (state.activeView === 'matrix') renderMatrixView();
           }
           if (Array.isArray(json.data.expenses) && json.data.expenses.length > 0) {
-            if (!state.expenses || state.expenses.length === 0) {
-              state.expenses = json.data.expenses;
-              localStorage.setItem(EXPENSES_STORAGE_KEY, JSON.stringify(state.expenses));
-            }
+            state.expenses = json.data.expenses;
+            localStorage.setItem(EXPENSES_STORAGE_KEY, JSON.stringify(state.expenses));
           }
         }
       }
     } catch (e) {
       // Offline or static server - ignore
     }
+    updateSyncIndicator();
+    updateLoginDbStatus();
   }
 
   async function saveSettingsToServer() {
@@ -953,353 +687,20 @@ WHERE id = 'main_store';`;
   function updateLoginDbStatus() {
     const el = document.getElementById('login-db-status');
     if (!el) return;
-    const configured = isSupabaseConfigured();
-    if (configured) {
-      el.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="text-emerald-700 font-semibold">Supabase Connected</span>`;
-    } else {
-      el.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span><span class="text-amber-700 font-medium">Supabase Not Connected</span>`;
-    }
+    el.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Local Database Active &bull; Offline &amp; Private</span>';
   }
 
-  async function handleSaveCloudDb(e) {
-    if (e && e.preventDefault) e.preventDefault();
-    const supUrl = document.getElementById('supabase-url-input');
-    const supKey = document.getElementById('supabase-key-input');
-    const brUrl = document.getElementById('cloud-api-url-input');
-
-    state.settings.dbProvider = currentDbTab;
-    if (supUrl) state.settings.supabaseUrl = supUrl.value.trim();
-    if (supKey) state.settings.supabaseKey = supKey.value.trim();
-    if (brUrl) state.settings.apiUrl = brUrl.value.trim();
-    state.settings.lastModified = Date.now();
-
-    supabaseClient = null; // Re-create client with new credentials
-    realtimeChannel = null;
-
-    // Persist settings locally and to server if running.
-    // CRITICAL: DO NOT call saveData() here, because on a new device state.clients is empty!
-    // Calling saveData() would push an empty clients array and erase the Supabase database!
-    try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
-      if (state.settings.supabaseUrl) localStorage.setItem('brt_supabase_url', state.settings.supabaseUrl);
-      if (state.settings.supabaseKey) localStorage.setItem('brt_supabase_key', state.settings.supabaseKey);
-    } catch (err) {}
-    saveSettingsToServer();
-
-    closeModal('cloudDatabaseModal');
-    updateLoginDbStatus();
-    showToast('Connecting to Supabase and pulling data...');
-
-    // IMMEDIATELY PULL all data from Supabase!
-    await checkCloudSync(false, { forcePull: true });
-  }
-
-  let realtimeChannel = null;
-
-  function subscribeToRealtime(sb) {
-    if (!sb || typeof sb.channel !== 'function') return;
-    if (realtimeChannel) return; // Already subscribed
-
-    try {
-      realtimeChannel = sb
-        .channel('clientledger_realtime_changes')
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'clientledger_data', filter: 'id=eq.main_store' },
-          payload => {
-            if (payload.new && payload.new.data) {
-              const remoteData = payload.new.data;
-              const remoteTime = Number(remoteData.lastModified) || (payload.new.updated_at ? new Date(payload.new.updated_at).getTime() : 0);
-              const localTime = Number(state.settings.lastModified) || 0;
-
-              // If another device made newer changes, apply them live!
-              if (remoteTime > localTime) {
-                applyCloudData(remoteData, 'Supabase Realtime');
-                const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                updateSyncIndicator(true, `Supabase Live (${timeStr})`);
-                showToast('Database updated from cloud!');
-              }
-            }
-          }
-        )
-        .subscribe(status => {
-          if (status === 'SUBSCRIBED') {
-            console.log('Realtime live sync active with Supabase.');
-          }
-        });
-    } catch (e) {
-      console.warn('Realtime subscription error:', e);
-    }
-  }
-
-  function isSupabaseConfigured() {
-    const url = (state.settings.supabaseUrl || SUPABASE_CONFIG.url || '').trim();
-    const key = (state.settings.supabaseKey || SUPABASE_CONFIG.anonKey || '').trim();
-    return Boolean(url && key);
-  }
-
-  function updateSupabaseConnectBanner(show) {
-    const banner = document.getElementById('supabase-connect-banner');
-    if (banner) {
-      if (show) banner.classList.remove('hidden');
-      else banner.classList.add('hidden');
-    }
-  }
-
-  async function checkCloudSync(silent = false, options = {}) {
-    updateLoginDbStatus();
-    const sb = getSupabaseClient();
-
-    // If Supabase is not connected, keep local database & localStorage data intact
-    if (!sb) {
-      cloudSyncAvailable = false;
-      updateSyncIndicator(false, 'Local Server DB (Active)');
-      updateSupabaseConnectBanner(false);
-      return;
-    }
-
-    updateSupabaseConnectBanner(false);
-    subscribeToRealtime(sb);
-
-    try {
-      const { data, error } = await sb
-        .from('clientledger_data')
-        .select('*')
-        .eq('id', 'main_store')
-        .maybeSingle();
-
-      if (error) {
-        console.warn('Supabase checkCloudSync error:', error);
-        if (!silent) updateSyncIndicator(false, 'Supabase Sync Error ⚠️');
-        return;
-      }
-
-      cloudSyncAvailable = true;
-
-      if (data && data.data) {
-        const remoteData = data.data;
-        const remoteClients = Array.isArray(remoteData.clients) ? remoteData.clients : [];
-        const remoteTime = Number(remoteData.lastModified) || (data.updated_at ? new Date(data.updated_at).getTime() : 0);
-        const localTime = Number(state.settings.lastModified) || 0;
-
-        // Force pull conditions:
-        // 1. Explicitly requested options.forcePull
-        // 2. Initial sync not completed yet in this browser session
-        // 3. Local has 0 clients while remote has clients
-        // 4. Remote is newer or equal timestamp
-        const shouldPull = Boolean(
-          options.forcePull ||
-          !hasCompletedInitialSync ||
-          (state.clients.length === 0 && remoteClients.length > 0) ||
-          remoteTime >= localTime
-        );
-
-        if (shouldPull) {
-          applyCloudData(remoteData, 'Supabase');
-          hasCompletedInitialSync = true;
-          if (!silent && remoteClients.length > 0) {
-            showToast(`✅ Synced ${remoteClients.length} client(s) from Supabase database!`);
-          }
-        } else if (localTime > remoteTime && state.clients.length > 0 && hasCompletedInitialSync) {
-          // Local genuinely has newer client edits made in this active session
-          await syncToCloud({ force: true });
-          hasCompletedInitialSync = true;
-        } else {
-          applyCloudData(remoteData, 'Supabase');
-          hasCompletedInitialSync = true;
-        }
-      } else {
-        // Table row does not exist yet in Supabase
-        if (state.clients.length > 0) {
-          await syncToCloud({ force: true });
-        } else {
-          await sb.from('clientledger_data').upsert({
-            id: 'main_store',
-            data: { clients: [], settings: state.settings, lastModified: Date.now(), version: 1 },
-            updated_at: new Date().toISOString(),
-          }, { onConflict: 'id' });
-        }
-        hasCompletedInitialSync = true;
-      }
-
-      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      updateSyncIndicator(true, `Supabase Synced (${timeStr})`);
-      updateLoginDbStatus();
-    } catch (err) {
-      console.warn('Supabase check error:', err);
-      if (!silent) updateSyncIndicator(false, 'Supabase Offline ⚠️');
-    }
-  }
-
-  function applyCloudData(remoteData, sourceName) {
-    if (!remoteData) return;
-    if (Array.isArray(remoteData.clients)) {
-      state.clients = remoteData.clients;
-      // Ensure all payments have unique identifiers
-      state.clients.forEach(c => {
-        if (Array.isArray(c.payments)) {
-          c.payments.forEach((p, idx) => {
-            if (!p.id) p.id = 'pay_' + (p.createdAt ? new Date(p.createdAt).getTime() : Date.now()) + '_' + idx;
-          });
-        }
-      });
-    } else {
-      state.clients = [];
-    }
-
-    if (Array.isArray(remoteData.expenses)) {
-      state.expenses = remoteData.expenses;
-    } else if (!state.expenses) {
-      state.expenses = [];
-    }
-
-    if (remoteData.settings && typeof remoteData.settings === 'object') {
-      const localSupUrl = state.settings.supabaseUrl;
-      const localSupKey = state.settings.supabaseKey;
-
-      state.settings = { ...state.settings, ...remoteData.settings };
-
-      if (!state.settings.supabaseUrl && localSupUrl) state.settings.supabaseUrl = localSupUrl;
-      if (!state.settings.supabaseKey && localSupKey) state.settings.supabaseKey = localSupKey;
-    }
-
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.clients));
-      localStorage.setItem(EXPENSES_STORAGE_KEY, JSON.stringify(state.expenses));
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
-    } catch (err) {}
-
-    updateCurrencySymbols();
-    updateBusinessProfileBanner();
-
-    if (state.activeView === 'dashboard') renderDashboard();
-    else if (state.activeView === 'clients') renderClientsList();
-    else if (state.activeView === 'client-detail' && state.activeClientId) renderClientDetail(state.activeClientId);
-    else if (state.activeView === 'matrix') renderMatrixView();
-    else if (state.activeView === 'payments') renderPaymentsView();
-  }
-
-  async function syncToCloud(options = {}) {
-    const sb = getSupabaseClient();
-
-    // If it is not connecting to database, then there should not be any data sync
-    if (!sb) {
-      updateSyncIndicator(false, 'Supabase Not Connected');
-      return { success: false, provider: 'none', error: 'Supabase database is not connected' };
-    }
-
-    // CRITICAL SAFETY SHIELD: Never overwrite remote database clients with an empty array
-    // unless the user specifically and explicitly clicked "Clear All Data" (options.allowEmpty === true).
-    if ((!state.clients || state.clients.length === 0) && !options.allowEmpty) {
-      try {
-        const { data: existingRow, error: checkErr } = await sb
-          .from('clientledger_data')
-          .select('data')
-          .eq('id', 'main_store')
-          .maybeSingle();
-
-        if (!checkErr && existingRow && existingRow.data) {
-          const remoteClients = Array.isArray(existingRow.data.clients) ? existingRow.data.clients : [];
-          if (remoteClients.length > 0) {
-            console.warn(`[Supabase Shield] Local has 0 clients but remote database has ${remoteClients.length} clients! Aborting destructive push and pulling remote data instead.`);
-            applyCloudData(existingRow.data, 'Supabase Remote Recovery');
-            hasCompletedInitialSync = true;
-            return { success: true, provider: 'supabase', pulled: true, count: remoteClients.length };
-          }
-        }
-      } catch (e) {
-        console.warn('[Supabase Shield] Error checking remote data:', e);
-      }
-    }
-
-    updateSyncIndicator(true, 'Syncing...', true);
-
-    const payload = {
-      clients: state.clients,
-      expenses: state.expenses || [],
-      settings: state.settings,
-      lastModified: state.settings.lastModified || Date.now(),
-      version: 1,
-    };
-
-    try {
-      const { error } = await sb.from('clientledger_data').upsert({
-        id: 'main_store',
-        data: payload,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'id' });
-
-      if (error) {
-        console.error('Supabase syncToCloud error:', error);
-        const errDetail = error.message || error.details || error.code || 'Sync failed';
-        updateSyncIndicator(false, 'Supabase Sync Error ⚠️');
-        return { success: false, provider: 'supabase', error: errDetail };
-      }
-
-      cloudSyncAvailable = true;
-      hasCompletedInitialSync = true;
-      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      updateSyncIndicator(true, `Supabase Synced (${timeStr})`);
-      saveSettingsToServer(); // Keep database.json updated for local server
-      return { success: true, provider: 'supabase', time: timeStr };
-    } catch (err) {
-      console.warn('Supabase syncToCloud exception:', err);
-      updateSyncIndicator(false, 'Supabase Offline ⚠️');
-      return { success: false, provider: 'supabase', error: err.message || 'Offline' };
-    }
-  }
-
-  async function manualCloudSync() {
-    const sb = getSupabaseClient();
-    if (!sb) {
-      showToast('⚠️ Please connect Supabase database first in Settings.', true);
-      openCloudDatabaseModal();
-      return;
-    }
-
-    showToast('Syncing all data with Supabase database...');
-    const res = await syncToCloud({ force: true });
-    if (res && res.success) {
-      showToast('✅ All data synced successfully to Supabase PostgreSQL!');
-    } else {
-      showToast(`⚠️ Database sync failed: ${res ? res.error : 'Unknown error'}`, true);
-    }
-  }
-
-  function updateSyncIndicator(online, label, isSpinning = false) {
+  function updateSyncIndicator(online = true, label = 'Local DB') {
     const el = document.getElementById('cloud-sync-status');
     const footerEl = document.getElementById('footer-sync-status');
-    const fullText = label || (online ? 'Supabase Synced' : 'Local DB Active');
-
-    // Generate short, elegant label for the top navbar so it never wraps or crowds the bar
-    let shortLabel = 'Local DB';
-    if (isSpinning) {
-      shortLabel = 'Syncing...';
-    } else if (online) {
-      shortLabel = 'Cloud Synced';
-    } else if (label && (label.includes('Error') || label.includes('Offline'))) {
-      shortLabel = 'Offline';
-    } else {
-      shortLabel = 'Local DB';
-    }
 
     if (el) {
-      if (isSpinning) {
-        el.className = 'hidden md:flex items-center gap-1.5 text-xs bg-blue-50 text-blue-700 px-2.5 py-1.5 rounded-lg border border-blue-200 cursor-pointer transition shrink-0 whitespace-nowrap';
-        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-500 animate-spin shrink-0"></span><span class="font-bold whitespace-nowrap">${shortLabel}</span>`;
-        el.title = fullText + ' (Click to manage cloud database settings)';
-      } else if (online) {
-        el.className = 'hidden md:flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1.5 rounded-lg border border-emerald-200 cursor-pointer hover:bg-emerald-100 transition shrink-0 whitespace-nowrap';
-        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span><span class="font-bold whitespace-nowrap">${shortLabel}</span>`;
-        el.title = `${fullText} (Click to manage cloud database settings)`;
-      } else {
-        el.className = 'hidden md:flex items-center gap-1.5 text-xs bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-300 cursor-pointer hover:bg-slate-200 transition shrink-0 whitespace-nowrap';
-        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span><span class="font-medium whitespace-nowrap">${shortLabel}</span>`;
-        el.title = `${fullText} (Click to configure optional cloud sync)`;
-      }
+      el.className = 'hidden md:flex items-center gap-1.5 text-xs bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-300 transition shrink-0 whitespace-nowrap';
+      el.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span><span class="font-medium whitespace-nowrap">Local DB</span>';
+      el.title = 'Running on Local Server Database (database.json)';
     }
     if (footerEl) {
-      footerEl.textContent = fullText;
+      footerEl.textContent = 'Local Database Mode';
     }
   }
 
@@ -1354,7 +755,6 @@ WHERE id = 'main_store';`;
   }
 
   function loadData() {
-    // 1. ALWAYS load settings FIRST so that Supabase credentials and preferences are available!
     try {
       const rawSettings = localStorage.getItem(SETTINGS_KEY);
       if (rawSettings) {
@@ -1362,23 +762,6 @@ WHERE id = 'main_store';`;
       }
     } catch (e) {
       console.error('Error loading settings:', e);
-    }
-
-    // Merge window.SUPABASE_CONFIG if provided via config.js
-    if (window.SUPABASE_CONFIG) {
-      if (!state.settings.supabaseUrl && window.SUPABASE_CONFIG.url) {
-        state.settings.supabaseUrl = window.SUPABASE_CONFIG.url.trim();
-      }
-      if (!state.settings.supabaseKey && window.SUPABASE_CONFIG.anonKey) {
-        state.settings.supabaseKey = window.SUPABASE_CONFIG.anonKey.trim();
-      }
-    }
-
-    if (state.settings.supabaseUrl && state.settings.supabaseKey) {
-      try {
-        localStorage.setItem('brt_supabase_url', state.settings.supabaseUrl);
-        localStorage.setItem('brt_supabase_key', state.settings.supabaseKey);
-      } catch (_) {}
     }
 
     // 2. Load clients from localStorage
@@ -1430,7 +813,7 @@ WHERE id = 'main_store';`;
 
   let syncDebounceTimer = null;
 
-  async function saveData(immediate = true, options = {}) {
+  async function saveData() {
     try {
       state.settings.lastModified = Date.now();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.clients));
@@ -1441,21 +824,10 @@ WHERE id = 'main_store';`;
       showToast('Error saving data to local storage', true);
     }
 
-    // Cancel any pending timer
-    if (syncDebounceTimer) {
-      clearTimeout(syncDebounceTimer);
-      syncDebounceTimer = null;
-    }
-
-    if (immediate) {
-      // INSTANT SYNC: Immediately push all updated data to Supabase/cloud database without delay
-      return await syncToCloud(options);
-    } else {
-      // Debounce only when specifically requested
-      syncDebounceTimer = setTimeout(() => {
-        syncToCloud(options);
-      }, 150);
-    }
+    // Persist immediately to local server database (database.json)
+    await saveSettingsToServer();
+    updateSyncIndicator();
+    return { success: true, provider: 'local' };
   }
 
   function seedSampleData() {
@@ -3336,31 +2708,9 @@ WHERE id = 'main_store';`;
     // 3. Close the modal
     closeModal('editBusinessProfileModal');
 
-    // 4. Cancel debounced timer to avoid duplicate sync
-    if (syncDebounceTimer) {
-      clearTimeout(syncDebounceTimer);
-      syncDebounceTimer = null;
-    }
-
-    // 5. Trigger immediate live sync to database
-    showToast('Saving and syncing business profile...');
-    const result = await syncToCloud({ force: true });
-
-    if (result && result.success) {
-      if (result.provider === 'supabase') {
-        showToast('✅ Business profile updated and synced to Supabase!');
-      } else if (result.provider === 'bigrock') {
-        showToast('✅ Business profile updated and synced to BigRock database!');
-      } else if (result.provider === 'local_server') {
-        showToast('✅ Business profile updated and synced to server database!');
-      } else {
-        showToast('✅ Business profile saved locally!');
-      }
-    } else if (result && !result.success) {
-      showToast(`⚠️ Saved locally, but database sync error: ${result.error || 'Check connection'}`, true);
-    } else {
-      showToast('✅ Business profile saved!');
-    }
+    // 4. Save to local server database (database.json)
+    await saveSettingsToServer();
+    showToast('✅ Business profile updated and saved!');
   }
 
   function toggleSettingsDropdown(event) {
@@ -6332,9 +5682,8 @@ WHERE id = 'main_store';`;
       loadData();
       updateCurrencySymbols();
       showView('dashboard');
-      showToast('Welcome back, Admin! Connecting database...');
-      // CRITICAL: Pull latest data from Supabase on login!
-      checkCloudSync(false, { forcePull: true });
+      showToast('Welcome back, Admin!');
+      loadServerConfig();
     } else {
       if (errBox) {
         errBox.classList.remove('hidden');
@@ -7879,17 +7228,9 @@ WHERE id = 'main_store';`;
       } else {
         showView('dashboard');
       }
-      checkCloudSync(false, { forcePull: true });
     } else {
       showLoginScreen();
     }
-
-    // Background auto-sync every 10 seconds to fetch changes from other devices/tabs
-    setInterval(() => {
-      if (state.isAuthenticated && typeof checkCloudSync === 'function') {
-        checkCloudSync(true);
-      }
-    }, 10000);
 
     const allModals = [
       'addClientModal',
@@ -7904,7 +7245,6 @@ WHERE id = 'main_store';`;
       'paymentReceiptModal',
       'pendingInvoiceModal',
       'editBusinessProfileModal',
-      'cloudDatabaseModal',
       'masterCompanyDetailModal',
       'masterEditFilingModal',
     ];
@@ -7942,11 +7282,6 @@ WHERE id = 'main_store';`;
 
   // Expose methods to global app namespace
   window.app = {
-    getSupabaseConfig: () => {
-      const url = (state.settings.supabaseUrl || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.url : '') || '').trim();
-      const key = (state.settings.supabaseKey || (typeof SUPABASE_CONFIG !== 'undefined' ? SUPABASE_CONFIG.anonKey : '') || '').trim();
-      return { url, key, isConfigured: Boolean(url && key) };
-    },
     handleLogin,
     handleLogout,
     quickFillLogin,
@@ -7983,11 +7318,6 @@ WHERE id = 'main_store';`;
     getNextMonth,
     openEditBusinessProfileModal,
     handleSaveBusinessProfile,
-    openCloudDatabaseModal,
-    copySupabaseSql,
-    setDbProviderTab,
-    testCloudDbConnection,
-    handleSaveCloudDb,
     toggleSettingsDropdown,
     openOverrideMonthModal,
     onOverrideMonthChange,
@@ -8048,9 +7378,6 @@ WHERE id = 'main_store';`;
     exportAllToCSV,
     loadSampleData,
     clearAllData,
-    manualCloudSync,
-    syncToCloud,
-    checkCloudSync,
     renderMasterView,
     setMasterSchemeFilter,
     setMasterStatusFilter,

@@ -1,12 +1,7 @@
 /**
- * ClientLedger Pro - Cloud Database Configuration
- * 
- * Paste your Supabase credentials here to automatically connect ALL devices,
- * browsers, and team members to your Supabase database (ideal for GitHub Pages).
- * 
- * You can find these in your Supabase Dashboard -> Project Settings -> API.
+ * ClientLedger Pro - Local Database Configuration
+ * The application operates purely in Local Server Database mode (database.json).
  */
-window.SUPABASE_CONFIG = {
-  url: '',     // e.g. 'https://xxxxxxxx.supabase.co'
-  anonKey: '', // e.g. 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+window.APP_CONFIG = {
+  mode: 'local'
 };

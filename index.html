@@ -37,8 +37,6 @@
     }
   </script>
   
-  <!-- Supabase Client Library (v2) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- Optional Shared Configuration (for all devices / GitHub Pages) -->
   <script src="config.js"></script>
@@ -141,22 +139,12 @@
           </button>
         </form>
 
-        <!-- Database Connection Quick Bar on Login -->
-        <div class="flex items-center justify-between text-xs px-1 pt-1 border-t border-slate-100">
-          <div id="login-db-status" class="flex items-center gap-1.5 text-[11px] text-slate-500">
-            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-            <span>Checking Supabase...</span>
+        <!-- Local Database Mode on Login -->
+        <div class="flex items-center justify-center text-xs px-1 pt-2 border-t border-slate-100">
+          <div id="login-db-status" class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Local Database Active &bull; Offline &amp; Private</span>
           </div>
-          <button type="button" onclick="app.openCloudDatabaseModal()" class="text-[11px] font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 hover:underline">
-            <span>⚙️ Supabase Settings</span>
-          </button>
-        </div>
-
-        <div class="text-center pt-1">
-          <p class="text-[11px] text-slate-400 flex items-center justify-center gap-1">
-            <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            <span>Cloud synchronized with Supabase &bull; Realtime multi-device sync</span>
-          </p>
         </div>
       </div>
 
@@ -215,8 +203,8 @@
 
         <!-- Action Buttons -->
         <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
-          <!-- Cloud / Local Sync Status Indicator -->
-          <div id="cloud-sync-status" onclick="app.openCloudDatabaseModal()" class="hidden md:flex items-center gap-1.5 text-xs bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-300 cursor-pointer hover:bg-slate-200 transition shrink-0 whitespace-nowrap" title="Click to view/configure Supabase cloud database connection">
+          <!-- Local Database Status Indicator -->
+          <div id="cloud-sync-status" class="hidden md:flex items-center gap-1.5 text-xs bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-300 transition shrink-0 whitespace-nowrap" title="Running on Local Server Database (database.json)">
             <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
             <span class="font-medium whitespace-nowrap">Local DB</span>
           </div>
@@ -256,10 +244,6 @@
               <button onclick="app.openEditBusinessProfileModal(); app.toggleSettingsDropdown();" class="w-full text-left px-3.5 py-2.5 text-slate-800 hover:bg-blue-50 hover:text-blue-700 flex items-center space-x-2.5 font-medium transition">
                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 <span>Edit Business Profile</span>
-              </button>
-              <button onclick="app.openCloudDatabaseModal(); app.toggleSettingsDropdown();" class="w-full text-left px-3.5 py-2.5 text-slate-800 hover:bg-indigo-50 hover:text-indigo-700 flex items-center space-x-2.5 font-medium transition">
-                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                <span>Cloud Database (Supabase)</span>
               </button>
               <div class="border-t border-slate-100 my-1"></div>
               <div class="px-3.5 py-1 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">Data Management</div>
@@ -360,28 +344,6 @@
         </div>
       </div>
 
-      <!-- Supabase Not Connected Alert Banner -->
-      <div id="supabase-connect-banner" class="hidden bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-5 shadow-sm">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="flex items-start gap-3">
-            <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-sm">
-              ⚡
-            </div>
-            <div>
-              <h3 class="text-sm font-bold text-amber-900">Supabase Cloud Database Not Connected</h3>
-              <p class="text-xs text-amber-700 mt-0.5">
-                All client records, billing, and balance calculations sync directly with your Supabase database. Connect your database to start adding clients or view live synced data.
-              </p>
-            </div>
-          </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <button onclick="app.openCloudDatabaseModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              <span>Connect Supabase Now</span>
-            </button>
-          </div>
-        </div>
-      </div>
 
       <!-- Date Range Filter Bar for Key Financial Metrics -->
       <div class="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200/90 shadow-xs">
@@ -1103,7 +1065,7 @@
   <!-- FOOTER -->
   <footer id="app-footer" class="bg-white border-t border-slate-200 py-4 mt-8 no-print text-center text-xs text-slate-400">
     <div class="max-w-screen-2xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <p>ClientLedger Pro &bull; <span id="footer-sync-status">Local Storage Mode</span> &bull; Secured Browser Accounting</p>
+      <p>ClientLedger Pro &bull; <span id="footer-sync-status">Local Database Mode</span> &bull; Secured Accounting</p>
       <div class="flex items-center gap-3">
         <button onclick="app.exportJSON()" class="hover:text-slate-600">Export Backup</button>
         <span>&bull;</span>
@@ -2220,102 +2182,6 @@
     </div>
   </div>
 
-  <!-- MODAL 7: CLOUD DATABASE CONNECTION (Supabase & BigRock) -->
-  <div id="cloudDatabaseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-      
-      <!-- Modal Header -->
-      <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600 px-6 py-4 text-white flex justify-between items-center">
-        <div>
-          <h3 class="font-bold text-base flex items-center gap-2">
-            <span>⚡</span> <span>Cloud Database Connection</span>
-          </h3>
-          <p class="text-xs text-emerald-100">Sync GitHub Pages directly with Supabase or BigRock</p>
-        </div>
-        <button onclick="app.closeModal('cloudDatabaseModal')" class="text-white/80 hover:text-white text-lg">&times;</button>
-      </div>
-
-      <!-- Provider Tabs -->
-      <div class="flex border-b border-slate-200 bg-slate-50 px-6 pt-3 gap-2">
-        <button type="button" id="tab-db-supabase" onclick="app.setDbProviderTab('supabase')" class="px-4 py-2 text-xs font-bold border-b-2 border-emerald-600 text-emerald-700 transition flex items-center gap-1.5">
-          <span>⚡</span> <span>Supabase (Recommended)</span>
-        </button>
-        <button type="button" id="tab-db-bigrock" onclick="app.setDbProviderTab('bigrock')" class="px-4 py-2 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-1.5">
-          <span>🐘</span> <span>BigRock MySQL</span>
-        </button>
-      </div>
-
-      <form onsubmit="app.handleSaveCloudDb(event)" class="p-6 space-y-4">
-        
-        <!-- PANEL 1: SUPABASE -->
-        <div id="panel-db-supabase" class="space-y-3.5">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              Supabase Project URL *
-            </label>
-            <input type="url" id="supabase-url-input" placeholder="https://xxxxxxxxxxxx.supabase.co" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white font-mono text-slate-800">
-            <p class="text-[11px] text-slate-400 mt-1">Found in Supabase Dashboard → Project Settings → API → Project URL</p>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              Supabase Anon Public API Key *
-            </label>
-            <input type="password" id="supabase-key-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white font-mono text-slate-800">
-            <p class="text-[11px] text-slate-400 mt-1">Found in Supabase Dashboard → Project Settings → API → anon / public</p>
-          </div>
-
-          <div class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-950 space-y-2">
-            <div class="flex items-center justify-between">
-              <div class="font-bold text-emerald-800 flex items-center gap-1.5">
-                <span>📋</span> <span>Supabase Quick Setup (2 Minutes):</span>
-              </div>
-              <button type="button" onclick="app.copySupabaseSql()" class="text-[11px] font-bold text-emerald-800 bg-white hover:bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded shadow-2xs transition flex items-center gap-1">
-                <span>📋 Copy SQL</span>
-              </button>
-            </div>
-            <ol class="list-decimal list-inside text-[11px] text-emerald-900/90 space-y-1 leading-relaxed pl-1">
-              <li>Create a free project on <strong>supabase.com</strong>.</li>
-              <li>Go to <strong>SQL Editor</strong>, paste the copied SQL script, and click <strong>Run</strong>.</li>
-              <li>Copy your <strong>Project URL</strong> and <strong>anon key</strong> into the fields above and click <strong>Test Connection</strong>.</li>
-            </ol>
-          </div>
-        </div>
-
-        <!-- PANEL 2: BIGROCK -->
-        <div id="panel-db-bigrock" class="space-y-3.5 hidden">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              BigRock API Endpoint URL
-            </label>
-            <input type="url" id="cloud-api-url-input" placeholder="https://yourdomain.com/api.php" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-mono text-slate-800">
-            <p class="text-[11px] text-slate-400 mt-1">Full URL where <code class="font-mono">api.php</code> is hosted on your BigRock domain</p>
-          </div>
-        </div>
-
-        <!-- Connection Test Status Box -->
-        <div id="cloud-test-status" class="hidden p-3 rounded-xl text-xs flex items-center gap-2.5">
-          <span id="cloud-test-icon"></span>
-          <span id="cloud-test-text"></span>
-        </div>
-
-        <div class="pt-2 flex flex-wrap justify-between items-center gap-2">
-          <div class="flex items-center gap-2">
-            <button type="button" onclick="app.testCloudDbConnection()" id="cloud-test-btn" class="px-3.5 py-2 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 rounded-lg transition flex items-center gap-1.5">
-              <span>⚡ Test Connection</span>
-            </button>
-            <button type="button" onclick="app.manualCloudSync()" class="px-3.5 py-2 text-xs font-bold text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-lg transition flex items-center gap-1.5" title="Push all current local clients and settings to database">
-              <span>🔄 Sync Now</span>
-            </button>
-          </div>
-          <div class="flex gap-2">
-            <button type="button" onclick="app.closeModal('cloudDatabaseModal')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg font-medium">Cancel</button>
-            <button type="submit" class="px-5 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold shadow-sm">Save & Connect</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
 
   <!-- MODAL 8: RECORD OUTGOING PAYMENT / EXPENSE -->
   <div id="recordExpenseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">

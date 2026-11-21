@@ -318,9 +318,7 @@
     "businessEmail": "accounts@brtconsultancy.com",
     "businessAddress": "Flat 302, Sri Krishna Complex, Wyra Road, Khammam, Telangana - 507001",
     "lastModified": 1795245193417,
-    "dbProvider": "supabase",
-    "supabaseUrl": "",
-    "supabaseKey": "",
+    "dbProvider": "local",
     "apiUrl": ""
   },
   "lastModified": 1795245193418,
