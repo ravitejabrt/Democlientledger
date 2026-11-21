@@ -1269,25 +1269,37 @@ WHERE id = 'main_store';`;
   function updateSyncIndicator(online, label, isSpinning = false) {
     const el = document.getElementById('cloud-sync-status');
     const footerEl = document.getElementById('footer-sync-status');
-    const displayText = label || (online ? 'Supabase Synced' : 'Supabase Not Connected');
+    const fullText = label || (online ? 'Supabase Synced' : 'Local DB Active');
+
+    // Generate short, elegant label for the top navbar so it never wraps or crowds the bar
+    let shortLabel = 'Local DB';
+    if (isSpinning) {
+      shortLabel = 'Syncing...';
+    } else if (online) {
+      shortLabel = 'Cloud Synced';
+    } else if (label && (label.includes('Error') || label.includes('Offline'))) {
+      shortLabel = 'Offline';
+    } else {
+      shortLabel = 'Local DB';
+    }
 
     if (el) {
       if (isSpinning) {
-        el.className = 'hidden sm:flex items-center gap-1.5 text-[11px] bg-blue-50 text-blue-700 px-2.5 py-1.5 rounded-lg border border-blue-200 cursor-pointer transition';
-        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-500 animate-spin"></span><span class="font-bold">${displayText}</span>`;
-        el.title = 'Syncing data with Supabase database...';
+        el.className = 'hidden md:flex items-center gap-1.5 text-xs bg-blue-50 text-blue-700 px-2.5 py-1.5 rounded-lg border border-blue-200 cursor-pointer transition shrink-0 whitespace-nowrap';
+        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-500 animate-spin shrink-0"></span><span class="font-bold whitespace-nowrap">${shortLabel}</span>`;
+        el.title = fullText + ' (Click to manage cloud database settings)';
       } else if (online) {
-        el.className = 'hidden sm:flex items-center gap-1.5 text-[11px] bg-emerald-50 text-emerald-700 px-2.5 py-1.5 rounded-lg border border-emerald-200 cursor-pointer hover:bg-emerald-100 transition';
-        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="font-bold">${displayText}</span>`;
-        el.title = `Connected to ${displayText}. Click to view database settings.`;
+        el.className = 'hidden md:flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1.5 rounded-lg border border-emerald-200 cursor-pointer hover:bg-emerald-100 transition shrink-0 whitespace-nowrap';
+        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span><span class="font-bold whitespace-nowrap">${shortLabel}</span>`;
+        el.title = `${fullText} (Click to manage cloud database settings)`;
       } else {
-        el.className = 'hidden sm:flex items-center gap-1.5 text-[11px] bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-300 cursor-pointer hover:bg-slate-200 transition';
-        el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span class="font-medium">${displayText || 'Local DB Active'}</span>`;
-        el.title = 'Running on Local Server Database. Click to configure optional Supabase cloud sync.';
+        el.className = 'hidden md:flex items-center gap-1.5 text-xs bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-300 cursor-pointer hover:bg-slate-200 transition shrink-0 whitespace-nowrap';
+        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span><span class="font-medium whitespace-nowrap">${shortLabel}</span>`;
+        el.title = `${fullText} (Click to configure optional cloud sync)`;
       }
     }
     if (footerEl) {
-      footerEl.textContent = displayText;
+      footerEl.textContent = fullText;
     }
   }
 

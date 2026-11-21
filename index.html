@@ -168,61 +168,62 @@
 
     <!-- Top Navigation Header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6">
       <div class="flex justify-between items-center h-16">
         
         <!-- Logo & Branding -->
-        <div class="flex items-center space-x-3 cursor-pointer" onclick="app.showView('dashboard')">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 font-bold text-xl">
+        <div class="flex items-center space-x-2.5 cursor-pointer shrink-0" onclick="app.showView('dashboard')">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 font-bold text-lg shrink-0">
             ₹
           </div>
-          <div>
-            <div class="flex items-center space-x-2">
-              <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-700">ClientLedger</span>
-              <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-semibold">Pro</span>
+          <div class="shrink-0">
+            <div class="flex items-center space-x-1.5">
+              <span class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-700 whitespace-nowrap">ClientLedger</span>
+              <span class="bg-blue-100 text-blue-800 text-[11px] px-1.5 py-0.2 rounded-full font-semibold">Pro</span>
             </div>
-            <p class="text-xs text-slate-500 hidden sm:block">Monthly Recurring Billing & Balance Tracker</p>
+            <p class="text-[11px] text-slate-500 hidden 2xl:block whitespace-nowrap">Monthly Recurring Billing &amp; Balance Tracker</p>
           </div>
         </div>
 
         <!-- Navigation Tabs -->
-        <nav class="flex items-center space-x-1 sm:space-x-2">
-          <button id="nav-dashboard" onclick="app.showView('dashboard')" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-blue-700 bg-blue-50 hover:bg-blue-100 flex items-center space-x-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-            <span class="hidden sm:inline">Dashboard</span>
+        <nav class="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
+          <button id="nav-dashboard" onclick="app.showView('dashboard')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors text-blue-700 bg-blue-50 hover:bg-blue-100 flex items-center space-x-1.5 whitespace-nowrap shrink-0">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <span class="hidden sm:inline whitespace-nowrap">Dashboard</span>
           </button>
-          <button id="nav-clients" onclick="app.showView('clients')" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-            <span>Clients</span>
-            <span id="nav-client-count" class="bg-slate-200 text-slate-700 text-xs px-1.5 py-0.2 rounded-full font-semibold">0</span>
+          <button id="nav-clients" onclick="app.showView('clients')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5 whitespace-nowrap shrink-0">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            <span class="whitespace-nowrap">Clients</span>
+            <span id="nav-client-count" class="bg-slate-200 text-slate-700 text-xs px-1.5 py-0.2 rounded-full font-semibold shrink-0">0</span>
           </button>
-          <button id="nav-matrix" onclick="app.showView('matrix')" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <span class="hidden md:inline">Monthly Matrix</span>
+          <button id="nav-matrix" onclick="app.showView('matrix')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5 whitespace-nowrap shrink-0">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span class="hidden xl:inline whitespace-nowrap">Monthly Matrix</span>
+            <span class="xl:hidden whitespace-nowrap">Matrix</span>
           </button>
-          <button id="nav-payments" onclick="app.showView('payments')" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-            <span>Payments</span>
-            <span id="nav-expense-count" class="hidden bg-slate-200 text-slate-700 text-xs px-1.5 py-0.2 rounded-full font-semibold">0</span>
+          <button id="nav-payments" onclick="app.showView('payments')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5 whitespace-nowrap shrink-0">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            <span class="whitespace-nowrap">Payments</span>
+            <span id="nav-expense-count" class="hidden bg-slate-200 text-slate-700 text-xs px-1.5 py-0.2 rounded-full font-semibold shrink-0">0</span>
           </button>
-          <button id="nav-gstr" onclick="app.showView('gstr')" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5" title="BRT GST Returns (Regular 3B, QRMP & Composition)">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <span>GSTR</span>
-            <span class="bg-indigo-100 text-indigo-700 text-[10px] px-1.5 py-0.2 rounded font-semibold uppercase tracking-wider">3B</span>
+          <button id="nav-gstr" onclick="app.showView('gstr')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5 whitespace-nowrap shrink-0" title="BRT GST Returns (Regular 3B, QRMP & Composition)">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span class="whitespace-nowrap">GSTR</span>
+            <span class="bg-indigo-100 text-indigo-700 text-[10px] px-1.5 py-0.2 rounded font-semibold uppercase tracking-wider shrink-0">3B</span>
           </button>
         </nav>
 
         <!-- Action Buttons -->
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
           <!-- Cloud / Local Sync Status Indicator -->
-          <div id="cloud-sync-status" onclick="app.openCloudDatabaseModal()" class="hidden sm:flex items-center gap-1.5 text-[11px] bg-amber-50 text-amber-800 px-2.5 py-1.5 rounded-lg border border-amber-300 cursor-pointer hover:bg-amber-100 transition" title="Click to view/configure Supabase cloud database connection">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-            <span class="font-medium">Supabase Not Connected</span>
+          <div id="cloud-sync-status" onclick="app.openCloudDatabaseModal()" class="hidden md:flex items-center gap-1.5 text-xs bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-300 cursor-pointer hover:bg-slate-200 transition shrink-0 whitespace-nowrap" title="Click to view/configure Supabase cloud database connection">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+            <span class="font-medium whitespace-nowrap">Local DB</span>
           </div>
 
           <!-- Currency selector -->
-          <div class="relative inline-block text-left">
-            <select id="currency-select" onchange="app.changeCurrency(this.value)" class="text-xs bg-slate-100 hover:bg-slate-200 border-0 rounded-lg py-1.5 px-2.5 font-medium text-slate-700 cursor-pointer focus:ring-2 focus:ring-blue-500">
+          <div class="relative inline-block text-left shrink-0">
+            <select id="currency-select" onchange="app.changeCurrency(this.value)" class="text-xs bg-slate-100 hover:bg-slate-200 border-0 rounded-lg py-1.5 px-2 font-medium text-slate-700 cursor-pointer focus:ring-2 focus:ring-blue-500 shrink-0 whitespace-nowrap">
               <option value="₹">₹ (INR)</option>
               <option value="$">$ (USD)</option>
               <option value="€">€ (EUR)</option>
@@ -233,20 +234,22 @@
           </div>
 
           <!-- Quick Load Demo Data Button in Header -->
-          <button onclick="app.loadSampleData()" class="bg-amber-400 hover:bg-amber-500 text-slate-900 border border-amber-500 font-bold px-3 py-1.5 rounded-lg text-xs shadow-xs transition flex items-center gap-1 cursor-pointer" title="Load Complete Demo Dataset">
-            <span>⚡ Demo Data</span>
+          <button onclick="app.loadSampleData()" class="bg-amber-400 hover:bg-amber-500 text-slate-900 border border-amber-500 font-bold px-2.5 py-1.5 rounded-lg text-xs shadow-xs transition flex items-center gap-1 cursor-pointer shrink-0 whitespace-nowrap" title="Load Complete Demo Dataset">
+            <span class="shrink-0">⚡</span>
+            <span class="whitespace-nowrap">Demo Data</span>
           </button>
 
           <!-- Quick New Client -->
-          <button onclick="app.openModal('addClientModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center space-x-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-            <span class="hidden sm:inline">Add Client</span>
+          <button onclick="app.openModal('addClientModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium shadow-sm transition-all flex items-center space-x-1 shrink-0 whitespace-nowrap" title="Add New Client">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span class="hidden xl:inline whitespace-nowrap">Add Client</span>
+            <span class="xl:hidden whitespace-nowrap">Client</span>
           </button>
 
           <!-- Settings / Data dropdown -->
-          <div class="relative">
-            <button id="settings-dropdown-btn" onclick="app.toggleSettingsDropdown(event)" class="p-2 rounded-lg hover:bg-slate-100 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500" title="Business Profile & Settings">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <div class="relative shrink-0">
+            <button id="settings-dropdown-btn" onclick="app.toggleSettingsDropdown(event)" class="p-1.5 sm:p-2 rounded-lg hover:bg-slate-100 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 shrink-0" title="Business Profile & Settings">
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             </button>
             <div id="settings-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-50 text-xs animate-in fade-in zoom-in-95">
               <div class="px-3.5 py-1 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">Business & Settings</div>
@@ -287,20 +290,20 @@
           </div>
 
           <!-- User Badge & Logout Button -->
-          <div class="hidden sm:flex items-center pl-2 ml-1 border-l border-slate-200 space-x-2">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+          <div class="hidden sm:flex items-center pl-2 ml-1 border-l border-slate-200 space-x-1.5 shrink-0 whitespace-nowrap">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
               A
             </div>
-            <div class="hidden md:block leading-tight text-left">
-              <div class="font-bold text-slate-800 text-xs">Admin</div>
-              <div class="text-[10px] text-emerald-600 font-medium flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Online
+            <div class="hidden xl:block leading-tight text-left shrink-0 whitespace-nowrap">
+              <div class="font-bold text-slate-800 text-xs whitespace-nowrap">Admin</div>
+              <div class="text-[10px] text-emerald-600 font-medium flex items-center gap-1 whitespace-nowrap">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span> Online
               </div>
             </div>
           </div>
 
-          <button onclick="app.handleLogout()" class="p-2 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 transition" title="Log Out">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <button onclick="app.handleLogout()" class="p-1.5 sm:p-2 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 transition shrink-0" title="Log Out">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
           </button>
         </div>
 
@@ -309,7 +312,7 @@
   </header>
 
   <!-- Main Content Container -->
-  <main id="main-content-container" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <main id="main-content-container" class="flex-1 max-w-screen-2xl w-full mx-auto px-3 sm:px-4 lg:px-6 py-6">
 
     <!-- VIEW 1: DASHBOARD -->
     <div id="view-dashboard" class="space-y-6">
@@ -1099,7 +1102,7 @@
 
   <!-- FOOTER -->
   <footer id="app-footer" class="bg-white border-t border-slate-200 py-4 mt-8 no-print text-center text-xs text-slate-400">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <div class="max-w-screen-2xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
       <p>ClientLedger Pro &bull; <span id="footer-sync-status">Local Storage Mode</span> &bull; Secured Browser Accounting</p>
       <div class="flex items-center gap-3">
         <button onclick="app.exportJSON()" class="hover:text-slate-600">Export Backup</button>
