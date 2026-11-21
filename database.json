@@ -1,0 +1,328 @@
+{
+  "clients": [
+    {
+      "id": "cli_apex",
+      "name": "Apex Digital Solutions",
+      "businessName": "Apex Digital Solutions Pvt Ltd",
+      "billingCycle": "monthly",
+      "hasGst": true,
+      "gstNumber": "36AAACA1234A1Z5",
+      "fixedMonthlyAmount": 12000,
+      "fixedYearlyAmount": 0,
+      "incomeTaxFee": 0,
+      "incomeTaxNote": "",
+      "extraFee": 0,
+      "extraFeeNote": "",
+      "startMonth": "2026-06",
+      "startYear": "2026",
+      "phone": "+91 98490 12345",
+      "email": "accounts@apexdigital.com",
+      "notes": "Web development & marketing retainer. Regular billing on 1st of every month.",
+      "status": "active",
+      "createdAt": "2026-06-01T09:00:00.000Z",
+      "monthOverrides": {
+        "2026-08": {
+          "amount": 15000,
+          "note": "Extra server migration & security hardening"
+        },
+        "2026-10": {
+          "amount": 10000,
+          "note": "Festive Diwali discount applied"
+        }
+      },
+      "payments": [
+        {
+          "id": "pay_apex_1",
+          "date": "2026-07-05",
+          "amount": 12000,
+          "discount": 0,
+          "method": "Bank Transfer",
+          "targetMonth": "2026-06",
+          "reference": "NEFT982341",
+          "notes": "Payment received for June 2026"
+        },
+        {
+          "id": "pay_apex_2",
+          "date": "2026-08-10",
+          "amount": 12000,
+          "discount": 0,
+          "method": "UPI",
+          "targetMonth": "2026-07",
+          "reference": "UPI789123",
+          "notes": "Paid via GPay"
+        },
+        {
+          "id": "pay_apex_3",
+          "date": "2026-09-15",
+          "amount": 15000,
+          "discount": 0,
+          "method": "Cheque",
+          "targetMonth": "2026-08",
+          "reference": "CHQ451290",
+          "notes": "SBI Cheque cleared for August fee"
+        },
+        {
+          "id": "pay_apex_4",
+          "date": "2026-10-12",
+          "amount": 6000,
+          "discount": 0,
+          "method": "UPI",
+          "targetMonth": "2026-09",
+          "reference": "UPI992211",
+          "notes": "Partial payment towards September fee"
+        }
+      ]
+    },
+    {
+      "id": "cli_kavitha",
+      "name": "Kavitha Enterprises",
+      "businessName": "Kavitha Enterprises (Retail)",
+      "billingCycle": "monthly",
+      "hasGst": true,
+      "gstNumber": "36BCDPK5678B1Z2",
+      "fixedMonthlyAmount": 5000,
+      "fixedYearlyAmount": 0,
+      "incomeTaxFee": 2500,
+      "incomeTaxNote": "Quarterly TDS return filing",
+      "extraFee": 1000,
+      "extraFeeNote": "E-way bill setup",
+      "startMonth": "2026-08",
+      "startYear": "2026",
+      "phone": "+91 98490 23456",
+      "email": "kavitha.retail@gmail.com",
+      "notes": "GST & TDS compliance. Clears accounts promptly on 5th of every month.",
+      "status": "active",
+      "createdAt": "2026-08-01T10:00:00.000Z",
+      "monthOverrides": {},
+      "payments": [
+        {
+          "id": "pay_kav_1",
+          "date": "2026-09-05",
+          "amount": 8500,
+          "discount": 0,
+          "method": "Cash",
+          "targetMonth": "2026-08",
+          "reference": "RCP-001",
+          "notes": "Paid cash for August (Fee 5k + IT 2.5k + Extra 1k)"
+        },
+        {
+          "id": "pay_kav_2",
+          "date": "2026-10-05",
+          "amount": 5000,
+          "discount": 0,
+          "method": "UPI",
+          "targetMonth": "2026-09",
+          "reference": "UPI334455",
+          "notes": "Cleared September monthly fee"
+        },
+        {
+          "id": "pay_kav_3",
+          "date": "2026-11-04",
+          "amount": 5000,
+          "discount": 0,
+          "method": "Bank Transfer",
+          "targetMonth": "2026-10",
+          "reference": "IMPS556677",
+          "notes": "Cleared October fee - Fully Settled Account"
+        }
+      ]
+    },
+    {
+      "id": "cli_balaji",
+      "name": "Sri Balaji Logistics",
+      "businessName": "Sri Balaji Logistics & Transport",
+      "billingCycle": "monthly",
+      "hasGst": true,
+      "gstNumber": "36AABCS9988C1Z8",
+      "fixedMonthlyAmount": 8000,
+      "fixedYearlyAmount": 0,
+      "incomeTaxFee": 0,
+      "incomeTaxNote": "",
+      "extraFee": 0,
+      "extraFeeNote": "",
+      "startMonth": "2026-05",
+      "startYear": "2026",
+      "phone": "+91 98490 34567",
+      "email": "balaji.logistics@yahoo.com",
+      "notes": "Fleet accounting & GST filing. Pending dues for 4 months.",
+      "status": "active",
+      "createdAt": "2026-05-01T11:00:00.000Z",
+      "monthOverrides": {},
+      "payments": [
+        {
+          "id": "pay_bal_1",
+          "date": "2026-06-10",
+          "amount": 8000,
+          "discount": 0,
+          "method": "Bank Transfer",
+          "targetMonth": "2026-05",
+          "reference": "NEFT441122",
+          "notes": "Paid for May 2026"
+        },
+        {
+          "id": "pay_bal_2",
+          "date": "2026-07-15",
+          "amount": 8000,
+          "discount": 0,
+          "method": "Bank Transfer",
+          "targetMonth": "2026-06",
+          "reference": "NEFT552233",
+          "notes": "Paid for June 2026"
+        }
+      ]
+    },
+    {
+      "id": "cli_sunrise",
+      "name": "Sunrise Cloud Technologies",
+      "businessName": "Sunrise Cloud Technologies LLP",
+      "billingCycle": "yearly",
+      "hasGst": true,
+      "gstNumber": "36AADCS4455D1Z3",
+      "fixedMonthlyAmount": 0,
+      "fixedYearlyAmount": 60000,
+      "incomeTaxFee": 0,
+      "incomeTaxNote": "",
+      "extraFee": 0,
+      "extraFeeNote": "",
+      "startMonth": "2025-01",
+      "startYear": "2025",
+      "phone": "+91 98490 45678",
+      "email": "finance@sunrisecloud.io",
+      "notes": "Annual IT compliance & corporate tax filing retainer.",
+      "status": "active",
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "monthOverrides": {},
+      "payments": [
+        {
+          "id": "pay_sun_1",
+          "date": "2025-04-10",
+          "amount": 60000,
+          "discount": 0,
+          "method": "Bank Transfer",
+          "targetMonth": "2025",
+          "reference": "RTGS112233",
+          "notes": "Annual retainer fee cleared for FY 2025"
+        },
+        {
+          "id": "pay_sun_2",
+          "date": "2026-04-15",
+          "amount": 30000,
+          "discount": 0,
+          "method": "Bank Transfer",
+          "targetMonth": "2026",
+          "reference": "NEFT667788",
+          "notes": "1st installment for FY 2026"
+        }
+      ]
+    },
+    {
+      "id": "cli_greenearth",
+      "name": "Green Earth Agro Farms",
+      "businessName": "Green Earth Agro Farms & Nursery",
+      "billingCycle": "monthly",
+      "hasGst": false,
+      "gstNumber": "",
+      "fixedMonthlyAmount": 4000,
+      "fixedYearlyAmount": 0,
+      "incomeTaxFee": 0,
+      "incomeTaxNote": "",
+      "extraFee": 0,
+      "extraFeeNote": "",
+      "startMonth": "2026-09",
+      "startYear": "2026",
+      "phone": "+91 98490 56789",
+      "email": "greenearthagro@gmail.com",
+      "notes": "Monthly bookkeeping. Paid 5 months lump-sum in advance.",
+      "status": "active",
+      "createdAt": "2026-09-01T08:00:00.000Z",
+      "monthOverrides": {},
+      "payments": [
+        {
+          "id": "pay_gea_1",
+          "date": "2026-09-02",
+          "amount": 20000,
+          "discount": 0,
+          "method": "UPI",
+          "targetMonth": "",
+          "reference": "UPI889900",
+          "notes": "Advance lump-sum payment for 5 months"
+        }
+      ]
+    },
+    {
+      "id": "cli_metro",
+      "name": "Metro Dental Clinic (Dr. Ramesh)",
+      "businessName": "Metro Dental Care Center",
+      "billingCycle": "monthly",
+      "hasGst": false,
+      "gstNumber": "",
+      "fixedMonthlyAmount": 3500,
+      "fixedYearlyAmount": 0,
+      "incomeTaxFee": 0,
+      "incomeTaxNote": "",
+      "extraFee": 0,
+      "extraFeeNote": "",
+      "startMonth": "2026-10",
+      "startYear": "2026",
+      "phone": "+91 98490 67890",
+      "email": "ramesh.metro@hotmail.com",
+      "notes": "Newly onboarded client starting October 2026.",
+      "status": "active",
+      "createdAt": "2026-10-01T12:00:00.000Z",
+      "monthOverrides": {},
+      "payments": []
+    }
+  ],
+  "expenses": [
+    {
+      "id": "exp_1",
+      "date": "2026-11-01",
+      "category": "Rent",
+      "amount": 15000,
+      "paymentMethod": "Bank Transfer",
+      "payee": "Sri Krishna Real Estates",
+      "description": "Office commercial space rent for November 2026"
+    },
+    {
+      "id": "exp_2",
+      "date": "2026-11-03",
+      "category": "Utilities",
+      "amount": 4200,
+      "paymentMethod": "UPI",
+      "payee": "ACT Fibernet & AWS Cloud",
+      "description": "High-speed fiber internet and cloud server hosting"
+    },
+    {
+      "id": "exp_3",
+      "date": "2026-11-05",
+      "category": "Office Supplies",
+      "amount": 1850,
+      "paymentMethod": "Cash",
+      "payee": "Venkateshwara Stationers",
+      "description": "A4 paper reams, printer ink cartridge, client file folders"
+    },
+    {
+      "id": "exp_4",
+      "date": "2026-11-10",
+      "category": "Salary",
+      "amount": 12000,
+      "paymentMethod": "Bank Transfer",
+      "payee": "K. Suresh (Audit Assistant)",
+      "description": "Audit assistant stipend for October/November"
+    }
+  ],
+  "settings": {
+    "currency": "₹",
+    "businessName": "BRT Financial & Tax Consultancy",
+    "businessPhone": "+91 98480 12345",
+    "businessEmail": "accounts@brtconsultancy.com",
+    "businessAddress": "Flat 302, Sri Krishna Complex, Wyra Road, Khammam, Telangana - 507001",
+    "lastModified": 1795242854894,
+    "dbProvider": "supabase",
+    "supabaseUrl": "",
+    "supabaseKey": "",
+    "apiUrl": ""
+  },
+  "lastModified": 1795242854895,
+  "version": 1
+}
