@@ -1,0 +1,13 @@
+S.NO,Company Name,RENT STATUS,User Name,GST No,GSTR-1,GSTR-3B,REMARKS
+1,"Nexura Innovations Pvt Ltd",Rent,"nexura_gst_01","36AAACN1111A1Z1",Pending,Pending,"Rent Rs. 18,000"
+2,"BlueSky Logistics & Transport",Rent,"bluesky_log_02","36ABBCB2222B1Z2",Pending,Pending,"Rent Rs. 12,000"
+3,"Apex Health & Wellness Store",Rent,"apex_health_03","36ACDCC3333C1Z3",Pending,Pending,"Rent Rs. 6,500"
+4,"Horizon Civil & Infra Works",Own,"horizon_infra_04","36ADDED4444D1Z4",Pending,Pending,"Own premises - no rent"
+5,"Zenith Super Mart & Wholesale",Rent,"zenith_mart_05","36AEEFE5555E1Z5",Pending,Pending,"Rent Rs. 22,000"
+6,"Starlight Media & Advertising",Rent,"starlight_ad_06","36AFFGF6666F1Z6",Pending,Pending,"Rent Rs. 8,000"
+7,"Solaris Green Energy Systems",Concent,"solaris_pwr_07","36AGGHG7777G1Z7",Pending,Pending,"Consent / NOC attached"
+8,"Pinnacle Diagnostics & Pathology",ITC,"pinnacle_lab_08","36AHHIH8888H1Z8",Pending,Pending,"ITC commercial lease"
+9,"Titan Industrial Automations",Rent,"titan_auto_09","36AIIJI9999I1Z9",Pending,Pending,"Rent Rs. 15,000"
+10,"Velox Courier & Cargo Express",Rent,"velox_cargo_10","36AJJKJ0000J1Z0",Pending,Pending,"Rent Rs. 9,500"
+11,"SilverOak Hospitality & Suites",Rent,"silveroak_hs_11","36AKKLK1122K1Z1",Pending,Pending,"Rent Rs. 25,000"
+12,"Cascade Water Purification Tech",Rent,"cascade_wt_12","36ALLML3344L1Z2",Pending,Pending,"Rent Rs. 7,000"
