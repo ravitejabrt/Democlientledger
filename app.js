@@ -1050,15 +1050,11 @@ WHERE id = 'main_store';`;
     updateLoginDbStatus();
     const sb = getSupabaseClient();
 
-    // If not connecting to database, there should NOT be any data in the project and no sync
+    // If Supabase is not connected, keep local database & localStorage data intact
     if (!sb) {
       cloudSyncAvailable = false;
-      state.clients = [];
-      updateSyncIndicator(false, 'Supabase Not Connected');
-      updateSupabaseConnectBanner(true);
-      if (state.activeView === 'dashboard') renderDashboard();
-      else if (state.activeView === 'clients') renderClientsList();
-      else if (state.activeView === 'matrix') renderMatrixView();
+      updateSyncIndicator(false, 'Local Server DB (Active)');
+      updateSupabaseConnectBanner(false);
       return;
     }
 
@@ -1285,9 +1281,9 @@ WHERE id = 'main_store';`;
         el.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="font-bold">${displayText}</span>`;
         el.title = `Connected to ${displayText}. Click to view database settings.`;
       } else {
-        el.className = 'hidden sm:flex items-center gap-1.5 text-[11px] bg-amber-50 text-amber-800 px-2.5 py-1.5 rounded-lg border border-amber-300 cursor-pointer hover:bg-amber-100 transition';
-        el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span class="font-medium">Supabase Not Connected</span>`;
-        el.title = 'Supabase database is not connected. Click to configure connection.';
+        el.className = 'hidden sm:flex items-center gap-1.5 text-[11px] bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-300 cursor-pointer hover:bg-slate-200 transition';
+        el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span class="font-medium">${displayText || 'Local DB Active'}</span>`;
+        el.title = 'Running on Local Server Database. Click to configure optional Supabase cloud sync.';
       }
     }
     if (footerEl) {
@@ -1395,6 +1391,11 @@ WHERE id = 'main_store';`;
     } catch (e) {
       console.error('Error loading data:', e);
       state.clients = [];
+    }
+
+    // Auto-seed demo clients if local storage is empty
+    if (!state.clients || state.clients.length === 0) {
+      seedSampleData();
     }
 
     // 3. Load outgoing payments & expenses from localStorage
